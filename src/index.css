@@ -1,0 +1,18 @@
+h1 {
+  color: red;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+div {
+  width: 750px;
+  height: 400px;
+  background: url('./assets/01.png');
+  background-size: 100% 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 75px;
+}
