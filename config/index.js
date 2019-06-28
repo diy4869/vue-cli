@@ -1,9 +1,10 @@
 const webpack = require('webpack')
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const htmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
   mode: 'development',
@@ -14,7 +15,19 @@ module.exports = {
     path: path.join(__dirname, '../dist'),
     filename: '[name].js'
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 0, // 生产块的最小大小
+      maxSize: 4096,
+      name: true
+    }
+  },
   module: {
+    /**
+     * webpack loader 加载顺序
+     * mini/style,css,postcss,sass/less/stylus
+     */
     rules: [
       {
         test: /\.css$/,
@@ -23,7 +36,7 @@ module.exports = {
       },
       {
         test: /\.(sass|scss)/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader']
       },
       {
         test: /\.(png|jpg|gif)$/i,
@@ -41,9 +54,19 @@ module.exports = {
         ]
       },
       {
+        test: /\.vue$/,
+        use: ['vue-loader']
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: ['babel-loader', 'eslint-loader']
+      },
+      {
+        enforce: 'pre',
+        test: /\.(js)$/,
+        loader: 'eslint-loader',
+        exclude: /node_modules/
       }
     ]
   },
@@ -60,8 +83,10 @@ module.exports = {
     }
   },
   plugins: [
+    new VueLoaderPlugin(),
     // plugin的解析顺序是从前往后的
-    new htmlWebpackPlugin({
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
       title: 'hello world',
       filename: 'index.html',
       template: './src/index.html',
@@ -72,7 +97,6 @@ module.exports = {
       chunkFilename: '[id].css'
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new CleanWebpackPlugin(),
     new UglifyJsPlugin({
       uglifyOptions: {
         drop_console: false
