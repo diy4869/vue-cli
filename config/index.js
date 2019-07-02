@@ -1,27 +1,41 @@
 const webpack = require('webpack')
 const path = require('path')
+const env = require('./env')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
-  mode: 'development',
+  mode: env,
   entry: {
     main: './src/index.js'
   },
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: '[name].js'
+    filename: '[name].[hash:5].js',
+    chunkFilename: '[name].[chunkhash].js'
   },
   optimization: {
     splitChunks: {
       chunks: 'all',
       minSize: 0, // 生产块的最小大小
-      maxSize: 4096,
+      maxSize: 40960,
       name: true
-    }
+    },
+    minimizer: [
+      new TerserPlugin({
+        sourceMap: env === 'development',
+        terserOptions: {
+          cache: true,
+          compress: {
+            drop_debugger: true,
+            drop_console: true
+          }
+        }
+      })
+    ]
   },
   module: {
     /**
@@ -32,11 +46,15 @@ module.exports = {
       {
         test: /\.css$/,
         // loader的解析顺序是从后往前的，所以mini要放前面
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+        use: [{
+          loader: MiniCssExtractPlugin.loader
+        }, 'css-loader', 'postcss-loader']
       },
       {
         test: /\.(sass|scss)/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader']
+        use: [{
+          loader: MiniCssExtractPlugin.loader
+        }, 'css-loader', 'postcss-loader', 'sass-loader']
       },
       {
         test: /\.(png|jpg|gif)$/i,
@@ -47,7 +65,7 @@ module.exports = {
               fallback: 'responsive-loader',
               limit: 4096,
               quality: 50,
-              name: '[name]-[hash:5]-[width].[ext]',
+              name: '[name].[hash:5].[ext]',
               outputPath: 'assets'
             }
           }
@@ -70,6 +88,16 @@ module.exports = {
       }
     ]
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '~': path.resolve(__dirname, 'src/assets')
+    },
+    // false可以不带扩展
+    enforceExtension: false,
+    // 自动解析确定的扩展
+    extensions: ['.js', '.json', '.vue']
+  },
   devServer: {
     contentBase: path.join(__dirname, 'src'),
     host: 'localhost',
@@ -82,7 +110,11 @@ module.exports = {
       errors: true
     }
   },
+  devtool: env === 'development' ? 'source-map' : 'eval-source-map',
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(env)
+    }),
     new VueLoaderPlugin(),
     // plugin的解析顺序是从前往后的
     new CleanWebpackPlugin(),
@@ -96,11 +128,6 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css'
     }),
-    new webpack.HotModuleReplacementPlugin(),
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        drop_console: false
-      }
-    })
+    new webpack.HotModuleReplacementPlugin()
   ]
 }

@@ -1,9 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['vue', 'standard'],
-  parserOptions: {
-    parser: 'babel-eslint'
-  },
+  extends: 'standard',
   env: {
     es6: true,
     node: true
