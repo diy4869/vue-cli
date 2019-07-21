@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const optimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = {
   mode: env,
@@ -21,8 +22,15 @@ module.exports = {
     splitChunks: {
       chunks: 'all',
       minSize: 0, // 生产块的最小大小
-      maxSize: 40960,
-      name: true
+      maxSize: 0,
+      name: true,
+      cacheGroups: {
+        commons: {
+          name: 'commons',
+          chunks: 'all',
+          minChunks: 2
+        }
+      }
     },
     minimizer: [
       new TerserPlugin({
@@ -125,8 +133,13 @@ module.exports = {
       inject: true
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+      filename: '[name].[contentHash:5].css',
+      chunkFilename: 'css/[id].css'
+    }),
+    // 压缩css
+    new optimizationCssAssetsPlugin({
+      assetNameRegExp: /\.css$/g,
+      cssProcessor: require('cssnano')
     }),
     new webpack.HotModuleReplacementPlugin()
   ]
