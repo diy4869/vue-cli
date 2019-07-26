@@ -6,6 +6,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 
 module.exports = {
   mode: env,
@@ -18,12 +20,12 @@ module.exports = {
     chunkFilename: '[name].[chunkhash].js'
   },
   optimization: {
-    splitChunks: {
-      chunks: 'all',
-      minSize: 0, // 生产块的最小大小
-      maxSize: 40960,
-      name: true
-    },
+    // splitChunks: {
+    //   chunks: 'all',
+    //   minSize: 0, // 生产块的最小大小
+    //   maxSize: 40960,
+    //   name: true
+    // },
     minimizer: [
       new TerserPlugin({
         sourceMap: env === 'development',
@@ -112,6 +114,25 @@ module.exports = {
   },
   devtool: env === 'development' ? 'source-map' : 'eval-source-map',
   plugins: [
+    new ProgressBarPlugin({
+      callback: function (res) {
+        console.log(res)
+        console.log('打包完成')
+      }
+    }),
+    // 模块分析插件
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'server',
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8889,
+      reportFilename: 'report.html',
+      defaultSizes: 'parsed',
+      openAnalyzer: true,
+      generateStatsFile: false,
+      statsFilename: 'stats.json',
+      statsOptions: null,
+      logLevel: 'info'
+    }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(env)
     }),
