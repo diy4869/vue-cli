@@ -1,14 +1,13 @@
 <template>
-  <div>
-    <hello-world></hello-world>
+  <div id="app">
+    app.vue
+    <router-link to="home">首页</router-link>
+    <router-view></router-view>
   </div>
 </template>
 <script>
-import test from './views/test.vue'
 export default {
-  components: {
-    'hello-world': test
-  },
+  name: 'app',
   data () {
     return {
       message: 'hello world'

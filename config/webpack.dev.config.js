@@ -28,7 +28,7 @@ const devConfig = merge(webpackBaseConfig, {
     new HtmlWebpackPlugin({
       title: 'hello world',
       filename: 'index.html',
-      template: './src/index.html',
+      template: './src/page/index.html',
       inject: true
     })
   ]
