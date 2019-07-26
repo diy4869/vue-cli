@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
+const glob = require('glob')
 const env = require('./env')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -8,6 +9,8 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const OptimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const PurgecssPlugin = require('purgecss-webpack-plugin')
 
 module.exports = {
   mode: env,
@@ -16,16 +19,23 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: '[name].[hash:5].js',
+    filename: '[name].[hash:8].js',
     chunkFilename: '[name].[chunkhash].js'
   },
   optimization: {
-    // splitChunks: {
-    //   chunks: 'all',
-    //   minSize: 0, // 生产块的最小大小
-    //   maxSize: 40960,
-    //   name: true
-    // },
+    splitChunks: {
+      chunks: 'all',
+      minSize: 0, // 生产块的最小大小
+      maxSize: 0,
+      name: true,
+      cacheGroups: {
+        commons: {
+          name: 'commons',
+          chunks: 'all',
+          minChunks: 2
+        }
+      }
+    },
     minimizer: [
       new TerserPlugin({
         sourceMap: env === 'development',
@@ -67,7 +77,7 @@ module.exports = {
               fallback: 'responsive-loader',
               limit: 4096,
               quality: 50,
-              name: '[name].[hash:5].[ext]',
+              name: '[name].[hash:8].[ext]',
               outputPath: 'assets'
             }
           }
@@ -146,8 +156,17 @@ module.exports = {
       inject: true
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+      filename: '[name].[contentHash:8].css',
+      chunkFilename: 'css/[id].css'
+    }),
+    // 压缩css
+    new OptimizationCssAssetsPlugin({
+      assetNameRegExp: /\.css$/g,
+      cssProcessor: require('cssnano')
+    }),
+    // 去掉没用的css
+    new PurgecssPlugin({
+      paths: glob.sync(path.join(__dirname, 'src'))
     }),
     new webpack.HotModuleReplacementPlugin()
   ]
