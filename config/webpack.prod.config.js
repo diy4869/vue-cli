@@ -39,6 +39,10 @@ const prodConfig = merge(webpackBaseConfig, {
       })
     ]
   },
+  stats: {
+    modules: false,
+    source: false
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -61,7 +65,6 @@ const prodConfig = merge(webpackBaseConfig, {
     // }),
     new ProgressBarPlugin({
       callback: function (res) {
-        console.log(res)
         console.log('打包完成')
       }
     })

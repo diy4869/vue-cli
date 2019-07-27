@@ -1,39 +1,30 @@
 const Vue = require('vue')
 const fs = require('fs')
-const render = require('vue-server-renderer').createRenderer({
-  template: fs.readFileSync('./page/index.html', 'utf-8')
+const path = require('path')
+
+const { createBundleRenderer } = require('vue-server-renderer')
+const template = fs.readFileSync(path.join(__dirname, 'page/index.html'), 'utf-8')
+const serverBundle = path.join(__dirname, '../dist/vue-ssr-server-bundle.json')
+const clientMainfest = path.join(__dirname, '../dist/vue-ssr-client-manifest.json')
+
+const render = createBundleRenderer(serverBundle, {
+  runInNewContext: false,
+  template,
+  clientMainfest
 })
-const Koa = require('koa')
-const Router = require('koa-router')
+const express = require('express')
+const server = express()
 
-const app = new Koa()
-const router = new Router()
-
-const context = {
-  title: 'hello world',
-  meta: `
-    <meta description="基于webpack构建的vue服务端渲染"/>
-  `
-}
-router.get('*', async ctx => {
-  console.log(ctx)
-  const app = new Vue({
-    data: {
-      url: ctx.href
-    },
-    template: `
-      <div>访问的url是{{url}}</div>
-    `
-  })
-  render.renderToString(app, context, (err, html) => {
-    if (err) {
-      ctx.status = 500
-      ctx.body = '出错了'
-    }
-    ctx.body = html
+server.get('*', (req, res) => {
+  const context = {
+    url: req.url
+  }
+  render.renderToString(context, (err, html) => {
+    if (err) console.log(err)
+    res.end(html)
   })
 })
 
-app
-  .use(router.routes(), router.allowedMethods())
-  .listen(8000)
+server.listen(8000, () => {
+  console.log('服务启动中。。。。')
+})

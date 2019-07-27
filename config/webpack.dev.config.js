@@ -4,19 +4,21 @@ const env = require('./env')
 const webpackBaseConfig = require('./webpack.base.config')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const merge = require('webpack-merge')
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
 const devConfig = merge(webpackBaseConfig, {
   devServer: {
     contentBase: path.join(__dirname, 'src'),
     host: 'localhost',
-    port: 3000,
+    port: 8080,
     hot: true,
     compress: true,
     noInfo: true,
     overlay: {
       warnings: true,
       errors: true
-    }
+    },
+    clientLogLevel: 'none'
   },
   devtool: env === 'development' ? 'source-map' : 'eval-source-map',
   plugins: [
@@ -30,6 +32,11 @@ const devConfig = merge(webpackBaseConfig, {
       filename: 'index.html',
       template: './src/page/index.html',
       inject: true
+    }),
+    new FriendlyErrorsWebpackPlugin({
+      compilationSuccessInfo: {
+        messages: ['项目成功启动，地址是localhost:8080']
+      }
     })
   ]
 })

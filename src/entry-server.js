@@ -1,4 +1,4 @@
-import { createApp } from './index'
+import { createApp } from './app'
 
 export default context => {
   return new Promise((resolve, reject) => {

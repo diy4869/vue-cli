@@ -10,7 +10,7 @@ export function createRouter () {
       {
         path: '/',
         name: 'home',
-        components: Home
+        component: Home
       }
     ]
   })
