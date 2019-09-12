@@ -3,7 +3,7 @@ const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
 const webpackBaseConfig = require('./webpack.base.config')
 
 module.exports = merge(webpackBaseConfig, {
-  entry: './src/client.js',
+  entry: './src/ssr/client.js',
   optimization: {
     splitChunks: {
       cacheGroups: {

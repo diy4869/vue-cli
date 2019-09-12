@@ -1,6 +1,6 @@
 const webpack = require('webpack')
-// const path = require('path')
-// const glob = require('glob')
+const path = require('path')
+const glob = require('glob')
 const env = require('./env')
 const merge = require('webpack-merge')
 const webpackBaseConfig = require('./webpack.base.config')
@@ -8,8 +8,9 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const OptimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-// const PurgecssPlugin = require('purgecss-webpack-plugin')
+const PurgecssPlugin = require('purgecss-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const prodConfig = merge(webpackBaseConfig, {
   optimization: {
@@ -28,6 +29,7 @@ const prodConfig = merge(webpackBaseConfig, {
     },
     minimizer: [
       new TerserPlugin({
+        parallel: 4,
         sourceMap: env === 'development',
         terserOptions: {
           cache: true,
@@ -44,6 +46,7 @@ const prodConfig = merge(webpackBaseConfig, {
     source: false
   },
   plugins: [
+    new BundleAnalyzerPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'hello world',
@@ -60,9 +63,9 @@ const prodConfig = merge(webpackBaseConfig, {
       cssProcessor: require('cssnano')
     }),
     // 去掉没用的css
-    // new PurgecssPlugin({
-    //   paths: glob.sync(path.join(__dirname, 'src'))
-    // }),
+    new PurgecssPlugin({
+      paths: glob.sync(path.join(__dirname, 'src/page'))
+    }),
     new ProgressBarPlugin({
       callback: function (res) {
         console.log('打包完成')

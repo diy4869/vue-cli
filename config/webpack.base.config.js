@@ -11,7 +11,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, '../dist'),
     filename: '[name].[hash:8].js',
-    chunkFilename: '[name].[chunkhash].js'
+    chunkFilename: '[name].[chunkhash].js',
+    publicPath: '/'
   },
   module: {
     /**
@@ -58,9 +59,12 @@ module.exports = {
       },
       {
         enforce: 'pre',
-        test: /\.(js)$/,
+        test: /\.(js|vue)$/,
         loader: 'eslint-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        options: {
+          formatter: require('eslint-friendly-formatter')
+        }
       }
     ]
   },
@@ -74,6 +78,7 @@ module.exports = {
     // 自动解析确定的扩展
     extensions: ['.js', '.vue']
   },
+  devtool: env === 'development' ? 'source-map' : 'none',
   plugins: [
     new VueLoaderPlugin(),
     new MiniCssExtractPlugin({

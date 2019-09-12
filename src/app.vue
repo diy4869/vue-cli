@@ -1,15 +1,13 @@
 <template>
   <div id="app">
-    <router-link to="home">首页 测试很好</router-link>
-    <router-view></router-view>
+    <div>hello world</div>
   </div>
 </template>
 <script>
 export default {
-  name: 'app',
   data () {
     return {
-      message: 'hello world'
+      title: 'hello world'
     }
   }
 }

@@ -20,7 +20,6 @@ const devConfig = merge(webpackBaseConfig, {
     },
     clientLogLevel: 'none'
   },
-  devtool: env === 'development' ? 'source-map' : 'eval-source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
@@ -40,5 +39,4 @@ const devConfig = merge(webpackBaseConfig, {
     })
   ]
 })
-
 module.exports = devConfig
