@@ -1,13 +1,38 @@
 <template>
   <div id="app">
     <div>hello world</div>
+    <button @click="btn('add')">
+      增加
+    </button>
+    <button @click="btn('reduce')">
+      减少
+    </button>
+    <h1>count：{{ count }}</h1>
   </div>
 </template>
 <script>
+import { ref, onMounted, onUpdated, onUnmounted } from 'vue'
 export default {
-  data () {
+  setup () {
+    onUpdated(() => {
+      console.log('onUpdated')
+    })
+    onUnmounted(() => {
+      console.log('onUnmounted')
+    })
+    onMounted(() => {
+      console.log('onMounted')
+    })
+    const count = ref(0)
+    const btn = args => {
+      args === 'add' ? count.value++ : count.value--
+    }
+    console.log(count)
+    console.log(ref)
+
     return {
-      title: 'hello world'
+      count,
+      btn
     }
   }
 }
