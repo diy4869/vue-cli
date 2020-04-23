@@ -10,7 +10,7 @@
     <h1>count：{{ count }}</h1>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { ref, onMounted, onUpdated, onUnmounted } from 'vue'
 export default {
   setup () {

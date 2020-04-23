@@ -10,7 +10,7 @@ const devConfig = merge(webpackBaseConfig, {
   devServer: {
     contentBase: path.join(__dirname, 'src'),
     host: 'localhost',
-    port: 8080,
+    port: 8000,
     hot: true,
     compress: true,
     noInfo: true,

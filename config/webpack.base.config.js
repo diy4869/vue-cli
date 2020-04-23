@@ -53,6 +53,10 @@ module.exports = {
         use: ['vue-loader']
       },
       {
+        test: /\.(ts|tsx)$/,
+        use: ['ts-loader']
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader']
