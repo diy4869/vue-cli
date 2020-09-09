@@ -1,9 +1,14 @@
+/*
+ * @Author: last order
+ * @Date: 2020-04-17 09:24:03
+ * @LastEditTime: 2020-07-16 19:40:00
+ */
 const webpack = require('webpack')
 const path = require('path')
 const env = require('./env')
 const webpackBaseConfig = require('./webpack.base.config')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
 const devConfig = merge(webpackBaseConfig, {
@@ -39,4 +44,5 @@ const devConfig = merge(webpackBaseConfig, {
     })
   ]
 })
+
 module.exports = devConfig
